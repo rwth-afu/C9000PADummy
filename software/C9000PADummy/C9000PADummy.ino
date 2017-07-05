@@ -55,9 +55,9 @@ static uint8_t current_register_address_for_1 = 0x00;
 static uint8_t current_register_address_for_2 = 0x00;
 static uint8_t current_register_address_for_3 = 0x00;
 
-PROGMEM const uint8_t ANSWER1[]             = {0x05, 0x00, 0x00, 'B'};
-PROGMEM const uint8_t ANSWER2[]             = {'L', 0xFF, '0', 'M'};
-PROGMEM const uint8_t ANSWER3[]             = {'D', 'D', 'D', 'D'};
+PROGMEM const uint8_t ANSWER1[]             = {'a', 'b', 'c'};
+PROGMEM const uint8_t ANSWER2[]             = {'d', 'e', 'f'};
+PROGMEM const uint8_t ANSWER3[]             = {'g', 'h', 'i'};
 
 // SoftIIC(uint8_t pin_scl, uint8_t pin_sda, uint16_t speed, bool pullups, bool multimastersupport, bool timeout);
 SoftIIC  my_SoftIIC = SoftIIC(SCL_PIN, SDA_PIN, IIC_SPEED, false, false, false);
