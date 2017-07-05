@@ -4,10 +4,14 @@
 
 /* 
 Watt Value from DG5MM measurement
-25  'B' 0x42  66
-38  'T' 0x54  84
-63      0xbd  189
-163 'o' 0x6f  111
+25  'B' 0x42  66  0b01000010
+38  'T' 0x54  84  0b01010100
+40            86
+63      0xbd  189 0b10111001
+165           190 0b10111010
+166           191 0b10111011
+168           192 0b10111100
+163 'o' 0x6f  111 0b01101111
 */
 
 /*I2C Analysis:
@@ -55,7 +59,10 @@ static uint8_t current_register_address_for_1 = 0x00;
 static uint8_t current_register_address_for_2 = 0x00;
 static uint8_t current_register_address_for_3 = 0x00;
 
-PROGMEM const uint8_t ANSWER1[]             = {0x05, 0x00, 0x00, 'B'};
+static uint8_t txpower = 0x42;
+static uint16_t runs = 0x00;
+
+PROGMEM const uint8_t ANSWER1[]             = {0x05, 0x00, 0x00, 90};
 PROGMEM const uint8_t ANSWER2[]             = {'L', 0xff, '0', 'M',};
 PROGMEM const uint8_t ANSWER3[]             = {'D', 'D', 'D', 'D'};
 
@@ -81,7 +88,9 @@ void loop() {
       set_current_register_address,
       read_iic_slave,
       write_iic_slave);
+        if (runs < 100) { runs ++; } else { runs = 0; txpower++; }
   }
+  
 
 //  delay(10000);
 }
@@ -94,7 +103,8 @@ void loop() {
 
 uint8_t generateanswer(uint8_t chipaddress, uint8_t registeraddress) {
   uint8_t retval = 0xFF;
-  if (chipaddress == CHIPADDR1 && (registeraddress - CHIPREG1) < (sizeof(ANSWER1) / sizeof(uint8_t))) {    retval = pgm_read_byte_near(ANSWER1 + registeraddress - CHIPREG1);  }
+  if (chipaddress == CHIPADDR1 && (registeraddress - CHIPREG1 - 1) < (sizeof(ANSWER1) / sizeof(uint8_t))) {    retval = pgm_read_byte_near(ANSWER1 + registeraddress - CHIPREG1);  }
+  if (chipaddress == CHIPADDR1 && (registeraddress - CHIPREG1) == 3) { retval = txpower; }
   if (chipaddress == CHIPADDR2 && (registeraddress - CHIPREG2) < (sizeof(ANSWER2) / sizeof(uint8_t))) {    retval = pgm_read_byte_near(ANSWER2 + registeraddress - CHIPREG2);  }
   if (chipaddress == CHIPADDR3 && (registeraddress - CHIPREG3) < (sizeof(ANSWER3) / sizeof(uint8_t))) {    retval = pgm_read_byte_near(ANSWER3 + registeraddress - CHIPREG3);  }
   return retval;
