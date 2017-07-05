@@ -55,9 +55,9 @@ static uint8_t current_register_address_for_1 = 0x00;
 static uint8_t current_register_address_for_2 = 0x00;
 static uint8_t current_register_address_for_3 = 0x00;
 
-PROGMEM const uint8_t ANSWER1[]             = {'a', 'b', 'c'};
-PROGMEM const uint8_t ANSWER2[]             = {'d', 'e', 'f'};
-PROGMEM const uint8_t ANSWER3[]             = {'g', 'h', 'i'};
+PROGMEM const uint8_t ANSWER1[]             = {0x05, 0x00, 0x00, 'B'};
+PROGMEM const uint8_t ANSWER2[]             = {'L', 0xff, '0', 'M',};
+PROGMEM const uint8_t ANSWER3[]             = {'D', 'D', 'D', 'D'};
 
 // SoftIIC(uint8_t pin_scl, uint8_t pin_sda, uint16_t speed, bool pullups, bool multimastersupport, bool timeout);
 SoftIIC  my_SoftIIC = SoftIIC(SCL_PIN, SDA_PIN, IIC_SPEED, false, false, false);
@@ -94,9 +94,9 @@ void loop() {
 
 uint8_t generateanswer(uint8_t chipaddress, uint8_t registeraddress) {
   uint8_t retval = 0xFF;
-  if (chipaddress == CHIPADDR1) {    retval = pgm_read_byte_near(ANSWER1 + registeraddress);  }
-  if (chipaddress == CHIPADDR2) {    retval = pgm_read_byte_near(ANSWER2 + registeraddress);  }
-  if (chipaddress == CHIPADDR3) {    retval = pgm_read_byte_near(ANSWER3 + registeraddress);  }
+  if (chipaddress == CHIPADDR1 && (registeraddress - CHIPREG1) < (sizeof(ANSWER1) / sizeof(uint8_t))) {    retval = pgm_read_byte_near(ANSWER1 + registeraddress - CHIPREG1);  }
+  if (chipaddress == CHIPADDR2 && (registeraddress - CHIPREG2) < (sizeof(ANSWER2) / sizeof(uint8_t))) {    retval = pgm_read_byte_near(ANSWER2 + registeraddress - CHIPREG2);  }
+  if (chipaddress == CHIPADDR3 && (registeraddress - CHIPREG3) < (sizeof(ANSWER3) / sizeof(uint8_t))) {    retval = pgm_read_byte_near(ANSWER3 + registeraddress - CHIPREG3);  }
   return retval;
 }
 
