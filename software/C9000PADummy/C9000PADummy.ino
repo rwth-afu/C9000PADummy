@@ -2,6 +2,38 @@
 #include <avr/pgmspace.h>
 
 
+/* 
+Watt Value from DG5MM measurement
+25  'B' 0x42  66
+38  'T' 0x54  84
+63      0xbd  189
+163 'o' 0x6f  111
+*/
+
+/*I2C Analysis:
+Setup Write to ['148'] + ACK
+'5' + ACK
+Setup Read to ['149'] + ACK
+'5' + ACK
+'0' + ACK
+'0' + ACK
+B + NAK
+Setup Write to ['150'] + ACK
+'5' + ACK
+Setup Read to ['151'] + ACK
+L + ACK
+'255' + ACK
+0 + ACK
+M + NAK
+Setup Write to ['152'] + ACK
+'5' + ACK
+Setup Read to ['153'] + ACK
+D + ACK
+D + ACK
+D + ACK
+D + NAK
+*/
+
 // Note: these can be *any* pins, not just a4/a5.
 #define SDA_PIN  A4
 #define SCL_PIN  A5
@@ -14,7 +46,6 @@
 #define CHIPADDR1 74    // In analysis Write: 148, Read 149, so address is 148/2
 #define CHIPADDR2 75    // In analysis Write: 150, Read 151, so address is 150/2
 #define CHIPADDR3 76    // In analysis Write: 152, Read 153, so address is 152/2
-
 
 #define CHIPREG1  5
 #define CHIPREG2  5
