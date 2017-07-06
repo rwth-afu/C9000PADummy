@@ -112,7 +112,7 @@ void setNewTXPower(uint8_t newtxpower)
 
 uint8_t generateanswer(uint8_t chipaddress, uint8_t registeraddress) {
   uint8_t retval = 0xFF;
-  if (chipaddress == CHIPADDR1 && (registeraddress - CHIPREG1) == 3) { return retval; }
+  if (chipaddress == CHIPADDR1 && (registeraddress - CHIPREG1) == 3) { return txpower; }
   if (chipaddress == CHIPADDR1 && (registeraddress - CHIPREG1 - 1) < (sizeof(ANSWER1) / sizeof(uint8_t))) {    retval = ANSWER1[registeraddress - CHIPREG1];  }
   if (chipaddress == CHIPADDR2 && (registeraddress - CHIPREG2) < (sizeof(ANSWER2) / sizeof(uint8_t))) {    retval = ANSWER2[registeraddress - CHIPREG2];  }
   if (chipaddress == CHIPADDR3 && (registeraddress - CHIPREG3) < (sizeof(ANSWER3) / sizeof(uint8_t))) {    retval = ANSWER3[registeraddress - CHIPREG3];  }
