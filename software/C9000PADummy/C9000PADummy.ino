@@ -55,6 +55,7 @@ D + NAK
 #define CHIPREG2  5
 #define CHIPREG3  5
 
+#define EEPROMFIRSTRUN   0x02
 #define EEPROMTXPWRADDR  0x01
 
 static uint8_t current_register_address_for_1 = 0x00;
@@ -73,7 +74,16 @@ SoftIIC  my_SoftIIC = SoftIIC(SCL_PIN, SDA_PIN, IIC_SPEED, false, false, false);
   
 void setup() {
   Serial.begin(SERIAL_PORT_SPEED);
-  txpower = EEPROM.read(EEPROMTXPWRADDR);
+  if ((EEPROM.read(EEPROMFIRSTRUN) == 0x00) || (EEPROM.read(EEPROMFIRSTRUN) == 0xff))
+  {
+    // First run, so set default value of txpower
+    setNewTXPower('B');
+    EEPROM.update(EEPROMFIRSTRUN, 0xAB);
+  }
+  else
+  {
+    txpower = EEPROM.read(EEPROMTXPWRADDR);
+  }
   noInterrupts();
 }
 
@@ -91,6 +101,7 @@ void loop() {
 
   // NEW: Check if UART has received a byte
   if (UCSR0A & _BV(RXC0)) {
+    // Read and clear pending RX Flag automatically
     uint8_t receivedByte = UDR0;
     setNewTXPower(receivedByte);
  
@@ -101,7 +112,7 @@ void loop() {
 void setNewTXPower(uint8_t newtxpower)
 {
   txpower = newtxpower;
-  EEPROM.write(EEPROMTXPWRADDR, newtxpower);
+  EEPROM.update(EEPROMTXPWRADDR, newtxpower);
 }
 
 
