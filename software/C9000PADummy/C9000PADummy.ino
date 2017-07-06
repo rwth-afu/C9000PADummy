@@ -1,6 +1,6 @@
 #include <SoftIIC.h>
-#include <avr/pgmspace.h>
 
+#include <EEPROM.h>
 
 /* 
 Watt Value from DG5MM measurement
@@ -55,6 +55,8 @@ D + NAK
 #define CHIPREG2  5
 #define CHIPREG3  5
 
+#define EEPROMTXPWRADDR  0x01
+
 static uint8_t current_register_address_for_1 = 0x00;
 static uint8_t current_register_address_for_2 = 0x00;
 static uint8_t current_register_address_for_3 = 0x00;
@@ -62,37 +64,44 @@ static uint8_t current_register_address_for_3 = 0x00;
 static uint8_t txpower = 0x42;
 static uint16_t runs = 0x00;
 
-PROGMEM const uint8_t ANSWER1[]             = {0x05, 0x00, 0x00, 90};
-PROGMEM const uint8_t ANSWER2[]             = {'L', 0xff, '0', 'M',};
-PROGMEM const uint8_t ANSWER3[]             = {'D', 'D', 'D', 'D'};
+const uint8_t ANSWER1[]             = {0x05, 0x00, 0x00, 'B'};
+const uint8_t ANSWER2[]             = {'L', 0xff, '0', 'M',};
+const uint8_t ANSWER3[]             = {'D', 'D', 'D', 'D'};
 
 // SoftIIC(uint8_t pin_scl, uint8_t pin_sda, uint16_t speed, bool pullups, bool multimastersupport, bool timeout);
 SoftIIC  my_SoftIIC = SoftIIC(SCL_PIN, SDA_PIN, IIC_SPEED, false, false, false);
   
 void setup() {
-  Serial.begin(SERIAL_PORT_SPEED);  
+  Serial.begin(SERIAL_PORT_SPEED);
+  txpower = EEPROM.read(EEPROMTXPWRADDR);
   noInterrupts();
 }
 
+
 void loop() {
+  my_SoftIIC.SlaveHandleTransaction(
+    respond_to_address,
+    respond_to_command,
+    respond_to_data,
+    get_current_register_address,
+    set_current_register_address,
+    read_iic_slave,
+    write_iic_slave);
+//  if (runs < 100) { runs ++; } else { runs = 0; txpower++; }
 
-  // Last, act as A 24c04 eeprom (read-only) slave
-  uint8_t successful_bytes = 0;
-  uint16_t TOTAL_EXPECTED_BYTES = 512;
-  while (successful_bytes < TOTAL_EXPECTED_BYTES) {
-    successful_bytes = successful_bytes + my_SoftIIC.SlaveHandleTransaction(
-      respond_to_address,
-      respond_to_command,
-      respond_to_data,
-      get_current_register_address,
-      set_current_register_address,
-      read_iic_slave,
-      write_iic_slave);
-        if (runs < 100) { runs ++; } else { runs = 0; txpower++; }
+  // NEW: Check if UART has received a byte
+  if (UCSR0A & _BV(RXC0)) {
+    uint8_t receivedByte = UDR0;
+    setNewTXPower(receivedByte);
+ 
   }
-  
-
 //  delay(10000);
+}
+
+void setNewTXPower(uint8_t newtxpower)
+{
+  txpower = newtxpower;
+  EEPROM.write(EEPROMTXPWRADDR, newtxpower);
 }
 
 
@@ -103,10 +112,10 @@ void loop() {
 
 uint8_t generateanswer(uint8_t chipaddress, uint8_t registeraddress) {
   uint8_t retval = 0xFF;
-  if (chipaddress == CHIPADDR1 && (registeraddress - CHIPREG1 - 1) < (sizeof(ANSWER1) / sizeof(uint8_t))) {    retval = pgm_read_byte_near(ANSWER1 + registeraddress - CHIPREG1);  }
-  if (chipaddress == CHIPADDR1 && (registeraddress - CHIPREG1) == 3) { retval = txpower; }
-  if (chipaddress == CHIPADDR2 && (registeraddress - CHIPREG2) < (sizeof(ANSWER2) / sizeof(uint8_t))) {    retval = pgm_read_byte_near(ANSWER2 + registeraddress - CHIPREG2);  }
-  if (chipaddress == CHIPADDR3 && (registeraddress - CHIPREG3) < (sizeof(ANSWER3) / sizeof(uint8_t))) {    retval = pgm_read_byte_near(ANSWER3 + registeraddress - CHIPREG3);  }
+  if (chipaddress == CHIPADDR1 && (registeraddress - CHIPREG1) == 3) { return retval; }
+  if (chipaddress == CHIPADDR1 && (registeraddress - CHIPREG1 - 1) < (sizeof(ANSWER1) / sizeof(uint8_t))) {    retval = ANSWER1[registeraddress - CHIPREG1];  }
+  if (chipaddress == CHIPADDR2 && (registeraddress - CHIPREG2) < (sizeof(ANSWER2) / sizeof(uint8_t))) {    retval = ANSWER2[registeraddress - CHIPREG2];  }
+  if (chipaddress == CHIPADDR3 && (registeraddress - CHIPREG3) < (sizeof(ANSWER3) / sizeof(uint8_t))) {    retval = ANSWER3[registeraddress - CHIPREG3];  }
   return retval;
 }
 
