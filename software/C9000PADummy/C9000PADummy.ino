@@ -65,7 +65,7 @@ static uint8_t current_register_address_for_3 = 0x00;
 static uint8_t txpower = 192;
 static uint16_t runs = 0x00;
 
-const uint8_t ANSWER1[]             = {0x05, 0x00, 0x00, 192};
+const uint8_t ANSWER1[]             = {0x05, 0x00, 0x00, 'o'};
 const uint8_t ANSWER2[]             = {'L', 0xff, '0', 'M',};
 const uint8_t ANSWER3[]             = {'D', 'D', 'D', 'D'};
 
@@ -77,14 +77,14 @@ void setup() {
   if ((EEPROM.read(EEPROMFIRSTRUN) == 0x00) || (EEPROM.read(EEPROMFIRSTRUN) == 0xff))
   {
     // First run, so set default value of txpower
-    setNewTXPower(192);
+    setNewTXPower('o');
     EEPROM.update(EEPROMFIRSTRUN, 0xAB);
   }
   else
   {
     txpower = EEPROM.read(EEPROMTXPWRADDR);
   }
-  setNewTXPower(192);
+  setNewTXPower('o');
   noInterrupts();
 }
 
