@@ -16,5 +16,8 @@ To change the output power setting, just send an 8-bit Byte via the UART with sp
 - Connect the USB to the already present RasPi having the https://github.com/rwth-afu/RasPagerC9000 PCB on top.
 - UniPager https://github.com/rwth-afu/unipager will soon be able to configure the Arduino automatically
 
+# Programming an Arduino Nano 3 clone from China
+avrdude -c arduino -b 57600 -P /dev/ttyUSB0 -p atmega328p -vv -U flash:w:C9000PADummy.hex
+
 # Use and license
 The self written parts are subject to the https://creativecommons.org/licenses/by-nc-sa/3.0/de/ license.
