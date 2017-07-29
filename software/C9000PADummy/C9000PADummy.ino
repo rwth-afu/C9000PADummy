@@ -65,7 +65,7 @@ static uint8_t current_register_address_for_3 = 0x00;
 static uint8_t txpower = 192;
 static uint16_t runs = 0x00;
 
-const uint8_t ANSWER1[]             = {0x05, 0x00, 0x00, 'o'};
+const uint8_t ANSWER1[]             = {0x05, 0x00, 0x00, 192};
 const uint8_t ANSWER2[]             = {'L', 0xff, '0', 'M',};
 const uint8_t ANSWER3[]             = {'D', 'D', 'D', 'D'};
 
@@ -77,14 +77,16 @@ void setup() {
   if ((EEPROM.read(EEPROMFIRSTRUN) == 0x00) || (EEPROM.read(EEPROMFIRSTRUN) == 0xff))
   {
     // First run, so set default value of txpower
-    setNewTXPower('o');
+    setNewTXPower(192);
+
+    // Mark EEPROM, that the first run is over
     EEPROM.update(EEPROMFIRSTRUN, 0xAB);
   }
   else
   {
     txpower = EEPROM.read(EEPROMTXPWRADDR);
   }
-  setNewTXPower('o');
+  setNewTXPower(192);
   noInterrupts();
 }
 
@@ -124,7 +126,7 @@ void setNewTXPower(uint8_t newtxpower)
 
 
 uint8_t generateanswer(uint8_t chipaddress, uint8_t registeraddress) {
-  uint8_t retval = 0xFE;
+  uint8_t retval = 0xFF;
   if (chipaddress == CHIPADDR1 && (registeraddress - CHIPREG1) == 3) { return txpower; }
   if (chipaddress == CHIPADDR1 && (registeraddress - CHIPREG1) < (sizeof(ANSWER1) / sizeof(uint8_t))) {    retval = ANSWER1[registeraddress - CHIPREG1];  }
   if (chipaddress == CHIPADDR2 && (registeraddress - CHIPREG2) < (sizeof(ANSWER2) / sizeof(uint8_t))) {    retval = ANSWER2[registeraddress - CHIPREG2];  }
