@@ -97,8 +97,8 @@ void loop() {
     set_current_register_address,
     read_iic_slave,
     write_iic_slave);
-//  if (runs < 100) { runs ++; } else { runs = 0; txpower++; }
-
+    if (runs < 100) { runs ++; } else { runs = 0; txpower++; }
+/*
   // NEW: Check if UART has received a byte
   if (UCSR0A & _BV(RXC0)) {
     // Read and clear pending RX Flag automatically
@@ -106,6 +106,7 @@ void loop() {
     setNewTXPower(receivedByte);
  
   }
+*/
 //  delay(10000);
 }
 
