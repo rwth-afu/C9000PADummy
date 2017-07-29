@@ -62,10 +62,10 @@ static uint8_t current_register_address_for_1 = 0x00;
 static uint8_t current_register_address_for_2 = 0x00;
 static uint8_t current_register_address_for_3 = 0x00;
 
-static uint8_t txpower = 0x42;
+static uint8_t txpower = 100;
 static uint16_t runs = 0x00;
 
-const uint8_t ANSWER1[]             = {0x05, 0x00, 0x00, 'o'};
+const uint8_t ANSWER1[]             = {0x05, 0x00, 0x00, 100};
 const uint8_t ANSWER2[]             = {'L', 0xff, '0', 'M',};
 const uint8_t ANSWER3[]             = {'D', 'D', 'D', 'D'};
 
@@ -77,7 +77,7 @@ void setup() {
   if ((EEPROM.read(EEPROMFIRSTRUN) == 0x00) || (EEPROM.read(EEPROMFIRSTRUN) == 0xff))
   {
     // First run, so set default value of txpower
-    setNewTXPower('o');
+    setNewTXPower(100);
     EEPROM.update(EEPROMFIRSTRUN, 0xAB);
   }
   else
@@ -97,8 +97,8 @@ void loop() {
     set_current_register_address,
     read_iic_slave,
     write_iic_slave);
-    if (runs < 100) { runs ++; } else { runs = 0; txpower++; }
-/*
+//    if (runs < 100) { runs ++; } else { runs = 0; txpower++; }
+
   // NEW: Check if UART has received a byte
   if (UCSR0A & _BV(RXC0)) {
     // Read and clear pending RX Flag automatically
@@ -106,7 +106,7 @@ void loop() {
     setNewTXPower(receivedByte);
  
   }
-*/
+
 //  delay(10000);
 }
 
