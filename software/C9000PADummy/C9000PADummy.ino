@@ -58,13 +58,13 @@ D + NAK
 #define EEPROMFIRSTRUN   0x02
 #define EEPROMTXPWRADDR  0x01
 
-#define DEFAULTPWR  200
+#define DEFAULTPWR  210
 
 static uint8_t current_register_address_for_1 = 0x00;
 static uint8_t current_register_address_for_2 = 0x00;
 static uint8_t current_register_address_for_3 = 0x00;
 
-static uint8_t txpower = 192;
+volatile uint8_t txpower = DEFAULTPWR;
 static uint16_t runs = 0x00;
 
 const uint8_t ANSWER1[]             = {0x05, 0x00, 0x00, DEFAULTPWR};
@@ -105,9 +105,14 @@ void loop() {
 //    if (runs < 100) { runs ++; } else { runs = 0; txpower++; }
 
   // NEW: Check if UART has received a byte
-  if (UCSR0A & _BV(RXC0)) {
+  
+  if (Serial.available() > 0) {
+    // read the incoming byte:
+    uint8_t receivedByte = Serial.read();
+                
+  //if (UCSR0A & _BV(RXC0)) {
     // Read and clear pending RX Flag automatically
-    uint8_t receivedByte = UDR0;
+    //uint8_t receivedByte = UDR0;
     setNewTXPower(receivedByte);
  
   }
@@ -118,7 +123,7 @@ void loop() {
 void setNewTXPower(uint8_t newtxpower)
 {
   txpower = newtxpower;
-  EEPROM.update(EEPROMTXPWRADDR, newtxpower);
+  //EEPROM.update(EEPROMTXPWRADDR, newtxpower);
 }
 
 
