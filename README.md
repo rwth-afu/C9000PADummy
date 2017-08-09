@@ -19,5 +19,8 @@ To change the output power setting, just send an 8-bit Byte via the UART with sp
 # Programming an Arduino Nano 3 clone from China
 avrdude -c arduino -b 57600 -P /dev/ttyUSB0 -p atmega328p -vv -U flash:w:C9000PADummy.hex
 
+# Automatic Symlink generation for Arduino Clones from China with CH340
+Put the file ``20_C9000PADummy.rules`` into ``/etc/udev/rules.d`` and reboot your RasPi. You should now have a symblink named /dev/C9000PADummy, which you can enter as Serial Port specification in the UniPager config.
+
 # Use and license
 The self written parts are subject to the https://creativecommons.org/licenses/by-nc-sa/3.0/de/ license.
