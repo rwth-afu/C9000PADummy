@@ -87,6 +87,7 @@ void setup() {
   else
   {
     txpower = EEPROM.read(EEPROMTXPWRADDR);
+    setNewTXPower(txpower);
   }
   noInterrupts();
 }
