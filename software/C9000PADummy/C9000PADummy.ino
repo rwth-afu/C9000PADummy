@@ -123,7 +123,7 @@ void loop() {
 void setNewTXPower(uint8_t newtxpower)
 {
   txpower = newtxpower;
-  //EEPROM.update(EEPROMTXPWRADDR, newtxpower);
+  EEPROM.update(EEPROMTXPWRADDR, newtxpower);
 }
 
 
