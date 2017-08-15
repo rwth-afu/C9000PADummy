@@ -58,7 +58,7 @@ D + NAK
 #define EEPROMFIRSTRUN   0x02
 #define EEPROMTXPWRADDR  0x01
 
-#define DEFAULTPWR  210
+#define DEFAULTPWR  66
 
 static uint8_t current_register_address_for_1 = 0x00;
 static uint8_t current_register_address_for_2 = 0x00;
