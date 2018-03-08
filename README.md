@@ -17,6 +17,7 @@ To change the output power setting, just send an 8-bit Byte via the UART with sp
 - UniPager https://github.com/rwth-afu/unipager will soon be able to configure the Arduino automatically
 - Break the connection from the DTR pin of the CH340 towards the RESET Pin of the ATMega and solder the cold end of the capacitor to GND.
 - Wire the ISP Header (but not the 5 Volt line) to the inner end of the RasPi3 GPIO Header. Use the wiring description in the ``avrdude.conf`` file. A proper Makefile is under construction.
+- Look for pin numbering here: https://cdn-images-1.medium.com/max/1600/1*pcfeGQr_mUJrXDFDrdKMww.png
 
 # Programming an Arduino Nano 3 clone from China
 As the USB2Ser is not any more resetting the ATMega, use the wired ISP Header for programming:
