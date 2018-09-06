@@ -60,6 +60,9 @@ D + NAK
 
 #define DEFAULTPWR  66
 
+// Use this if you have a C9000PADummy with 7-segement LED display
+// #define HAS_7SEG
+
 static uint8_t current_register_address_for_1 = 0x00;
 static uint8_t current_register_address_for_2 = 0x00;
 static uint8_t current_register_address_for_3 = 0x00;
@@ -73,8 +76,42 @@ const uint8_t ANSWER3[]             = {'D', 'D', 'D', 'D'};
 
 // SoftIIC(uint8_t pin_scl, uint8_t pin_sda, uint16_t speed, bool pullups, bool multimastersupport, bool timeout);
 SoftIIC  my_SoftIIC = SoftIIC(SCL_PIN, SDA_PIN, IIC_SPEED, false, false, false);
-  
+
+#if defined(HAS_7SEG)
+byte seven_seg_digits[16][7] = { { 0,0,0,0,0,0,1 },  // = 0
+                                 { 1,0,0,1,1,1,1 },  // = 1
+                                 { 0,0,1,0,0,1,0 },  // = 2
+                                 { 0,0,0,0,1,1,0 },  // = 3
+                                 { 1,0,0,1,1,0,0 },  // = 4
+                                 { 0,1,0,0,1,0,0 },  // = 5
+                                 { 0,1,0,0,0,0,0 },  // = 6
+                                 { 0,0,0,1,1,1,1 },  // = 7
+                                 { 0,0,0,0,0,0,0 },  // = 8
+                                 { 0,0,0,1,1,0,0 },  // = 9
+                                 { 0,0,0,1,0,0,0 },  // = A
+                                 { 1,1,0,0,0,0,0 },  // = B
+                                 { 0,1,1,0,0,0,1 },  // = C
+                                 { 1,0,0,0,0,1,0 },  // = D
+                                 { 0,1,1,0,0,0,0 },  // = E
+                                 { 0,1,1,1,0,0,0 }   // = F
+                               };
+#endif
+
 void setup() {
+#if defined(HAS_7SEG)
+  pinMode(2, OUTPUT);
+  pinMode(3, OUTPUT);
+  pinMode(4, OUTPUT);
+  pinMode(5, OUTPUT);
+  pinMode(6, OUTPUT);
+  pinMode(7, OUTPUT);
+  pinMode(8, OUTPUT);
+  pinMode(9, OUTPUT);
+  for (int i= 2; i < 10; i++) {
+    digitalWrite(i, HIGH);
+  }
+#endif
+
   Serial.begin(SERIAL_PORT_SPEED);
   if ((EEPROM.read(EEPROMFIRSTRUN) == 0x00) || (EEPROM.read(EEPROMFIRSTRUN) == 0xff))
   {
@@ -124,9 +161,51 @@ void setNewTXPower(uint8_t newtxpower)
 {
   txpower = newtxpower;
   EEPROM.update(EEPROMTXPWRADDR, newtxpower);
+#if defined(HAS_7SEG)
+  if (txpower == 66)
+    sevenSegWrite(0);
+  if (txpower == 82)
+    sevenSegWrite(1);
+  if (txpower == 99)
+    sevenSegWrite(2);
+  if (txpower == 111)
+    sevenSegWrite(3);
+  if (txpower == 122)
+    sevenSegWrite(4);
+  if (txpower == 132)
+    sevenSegWrite(5);
+  if (txpower == 147)
+    sevenSegWrite(6);
+  if (txpower == 154)
+    sevenSegWrite(7);
+  if (txpower == 163)
+    sevenSegWrite(8);
+  if (txpower == 174)
+    sevenSegWrite(9);
+  if (txpower == 183)
+    sevenSegWrite(10);
+  if (txpower == 188)
+    sevenSegWrite(11);
+  if (txpower == 194)
+    sevenSegWrite(12);
+  if (txpower == 204)
+    sevenSegWrite(13);
+  if (txpower == 211)
+    sevenSegWrite(14);
+  if (txpower == 216)
+    sevenSegWrite(15);
+#endif
 }
 
-
+#if defined(HAS_7SEG)
+void sevenSegWrite(byte digit) {
+  byte pin = 2;
+  for (byte segCount = 0; segCount < 7; ++segCount) {
+    digitalWrite(pin, seven_seg_digits[digit][segCount]);
+    ++pin;
+  }
+}
+#endif
 
 //////////////////////////////////////////////////////////// These functions should be edited to give the iic slave a 'personality'. ////////////////////////////////////////////////////////////////
 
