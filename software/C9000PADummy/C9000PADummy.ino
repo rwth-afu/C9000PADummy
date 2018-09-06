@@ -58,7 +58,10 @@ D + NAK
 #define EEPROMFIRSTRUN   0x02
 #define EEPROMTXPWRADDR  0x01
 
-#define DEFAULTPWR  210
+#define DEFAULTPWR  66
+
+// Use this if you have a C9000PADummy with 7-segement LED display
+// #define HAS_7SEG
 
 static uint8_t current_register_address_for_1 = 0x00;
 static uint8_t current_register_address_for_2 = 0x00;
@@ -73,7 +76,8 @@ const uint8_t ANSWER3[]             = {'D', 'D', 'D', 'D'};
 
 // SoftIIC(uint8_t pin_scl, uint8_t pin_sda, uint16_t speed, bool pullups, bool multimastersupport, bool timeout);
 SoftIIC  my_SoftIIC = SoftIIC(SCL_PIN, SDA_PIN, IIC_SPEED, false, false, false);
-  
+
+#if defined(HAS_7SEG)
 byte seven_seg_digits[16][7] = { { 0,0,0,0,0,0,1 },  // = 0
                                  { 1,0,0,1,1,1,1 },  // = 1
                                  { 0,0,1,0,0,1,0 },  // = 2
@@ -91,8 +95,10 @@ byte seven_seg_digits[16][7] = { { 0,0,0,0,0,0,1 },  // = 0
                                  { 0,1,1,0,0,0,0 },  // = E
                                  { 0,1,1,1,0,0,0 }   // = F
                                };
+#endif
 
 void setup() {
+#if defined(HAS_7SEG)
   pinMode(2, OUTPUT);
   pinMode(3, OUTPUT);
   pinMode(4, OUTPUT);
@@ -104,6 +110,7 @@ void setup() {
   for (int i= 2; i < 10; i++) {
     digitalWrite(i, HIGH);
   }
+#endif
 
   Serial.begin(SERIAL_PORT_SPEED);
   if ((EEPROM.read(EEPROMFIRSTRUN) == 0x00) || (EEPROM.read(EEPROMFIRSTRUN) == 0xff))
@@ -154,6 +161,7 @@ void setNewTXPower(uint8_t newtxpower)
 {
   txpower = newtxpower;
   EEPROM.update(EEPROMTXPWRADDR, newtxpower);
+#if defined(HAS_7SEG)
   if (txpower == 66)
     sevenSegWrite(0);
   if (txpower == 82)
@@ -186,9 +194,10 @@ void setNewTXPower(uint8_t newtxpower)
     sevenSegWrite(14);
   if (txpower == 216)
     sevenSegWrite(15);
+#endif
 }
 
-
+#if defined(HAS_7SEG)
 void sevenSegWrite(byte digit) {
   byte pin = 2;
   for (byte segCount = 0; segCount < 7; ++segCount) {
@@ -196,6 +205,7 @@ void sevenSegWrite(byte digit) {
     ++pin;
   }
 }
+#endif
 
 //////////////////////////////////////////////////////////// These functions should be edited to give the iic slave a 'personality'. ////////////////////////////////////////////////////////////////
 
